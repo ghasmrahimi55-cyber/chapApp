@@ -1,0 +1,136 @@
+// نمایش تاریخ امروز شمسی
+function displayTodayJalali() {
+    const today = new Date();
+    const jalali = toJalaali(today);
+    const todayElement = document.getElementById('todayJalali');
+    todayElement.textContent = `امروز: ${jalali.jy}/${jalali.jm}/${jalali.jd}`;
+}
+
+// تبدیل تاریخ میلادی به شمسی
+function toJalaaliString(date) {
+    const jalali = toJalaali(new Date(date));
+    return `${jalali.jy}/${jalali.jm}/${jalali.jd}`;
+}
+
+// تبدیل نوع خدمات به فارسی
+function getServiceTypeText(type) {
+    const types = {
+        'offset': 'چاپ افست',
+        'digital': 'چاپ دیجیتال',
+        'large_format': 'چاپ لارج فرمت',
+        'binding': 'صحافی'
+    };
+    return types[type] || type;
+}
+
+// دریافت رنگ وضعیت
+function getStatusColor(status) {
+    const colors = {
+        'pending': 'background: #fff3cd; color: #856404;',
+        'processing': 'background: #d1ecf1; color: #0c5460;',
+        'completed': 'background: #d4edda; color: #155724;'
+    };
+    return colors[status] || 'background: #e2e3e5; color: #383d41;';
+}
+
+// دریافت متن وضعیت
+function getStatusText(status) {
+    const texts = {
+        'pending': 'در انتظار',
+        'processing': 'در حال انجام',
+        'completed': 'تکمیل شده'
+    };
+    return texts[status] || status;
+}
+
+// ذخیره سفارش در localStorage
+function saveOrder(order) {
+    const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+    orders.push(order);
+    localStorage.setItem('orders', JSON.stringify(orders));
+}
+
+// دریافت سفارشات از localStorage
+function getOrders() {
+    return JSON.parse(localStorage.getItem('orders') || '[]');
+}
+
+// نمایش لیست سفارشات
+function displayOrders() {
+    const orders = getOrders();
+    const container = document.getElementById('ordersContainer');
+    
+    if (orders.length === 0) {
+        container.innerHTML = '<p class="no-orders">هنوز سفارشی ثبت نشده است</p>';
+        return;
+    }
+    
+    container.innerHTML = orders.map(order => `
+        <div class="order-card">
+            <h3>${order.customerName}</h3>
+            <div class="order-info">
+                <span>خدمات: ${getServiceTypeText(order.serviceType)}</span>
+                <span>تیراژ: ${order.quantity}</span>
+                <span>مبلغ: ${order.amount.toLocaleString()} تومان</span>
+                <span class="order-status" style="${getStatusColor(order.status)}">
+                    ${getStatusText(order.status)}
+                </span>
+                <span class="order-date-jalali">
+                    تحویل: ${order.deliveryDateJalali}
+                </span>
+            </div>
+        </div>
+    `).join('');
+}
+
+// به‌روزرسانی خلاصه سفارشات
+function updateSummary() {
+    const orders = getOrders();
+    const totalOrders = orders.length;
+    const totalAmount = orders.reduce((sum, order) => sum + order.amount, 0);
+    
+    document.getElementById('totalOrders').textContent = totalOrders;
+    document.getElementById('totalAmount').textContent = totalAmount.toLocaleString();
+}
+
+// مدیریت ثبت سفارش
+function handleOrderSubmit(e) {
+    e.preventDefault();
+    
+    const customerName = document.getElementById('customerName').value;
+    const serviceType = document.getElementById('serviceType').value;
+    const quantity = parseInt(document.getElementById('quantity').value);
+    const deliveryDate = document.getElementById('deliveryDate').value;
+    const amount = parseFloat(document.getElementById('amount').value);
+    
+    const order = {
+        id: Date.now(),
+        customerName,
+        serviceType,
+        quantity,
+        deliveryDate,
+        deliveryDateJalali: toJalaaliString(deliveryDate),
+        amount,
+        status: 'pending',
+        createdAt: new Date().toISOString()
+    };
+    
+    saveOrder(order);
+    displayOrders();
+    updateSummary();
+    e.target.reset();
+    
+    alert('سفارش با موفقیت ثبت شد!');
+}
+
+// راه‌اندازی اپلیکیشن
+function initApp() {
+    displayTodayJalali();
+    displayOrders();
+    updateSummary();
+    
+    document.getElementById('orderForm').addEventListener('submit', handleOrderSubmit);
+}
+
+// اجرا هنگام بارگذاری صفحه
+document.addEventListener('DOMContentLoaded', initApp);

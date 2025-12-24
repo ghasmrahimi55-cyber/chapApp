@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدیریت چاپخانه</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/jalaali-js/dist/jalaali.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>سیستم مدیریت چاپخانه</h1>
+            <p class="today-jalali" id="todayJalali"></p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="form-section">
+            <h2>ثبت سفارش جدید</h2>
+            <form id="orderForm">
+                <div class="form-group">
+                    <label for="customerName">نام مشتری</label>
+                    <input type="text" id="customerName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="serviceType">نوع خدمات</label>
+                    <select id="serviceType" required>
+                        <option value="offset">چاپ افست</option>
+                        <option value="digital">چاپ دیجیتال</option>
+                        <option value="large_format">چاپ لارج فرمت</option>
+                        <option value="binding">صحافی</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="quantity">تیراژ</label>
+                    <input type="number" id="quantity" min="1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="deliveryDate">تاریخ تحویل</label>
+                    <input type="date" id="deliveryDate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="amount">مبلغ (تومان)</label>
+                    <input type="number" id="amount" min="0" step="1000" required>
+                </div>
+                
+                <button type="submit">ثبت سفارش</button>
+            </form>
+        </section>
+
+        <section class="orders-section">
+            <h2>لیست سفارشات</h2>
+            <div id="ordersContainer">
+                <p class="no-orders">هنوز سفارشی ثبت نشده است</p>
+            </div>
+        </section>
+
+        <section class="summary-section">
+            <h2>خلاصه سفارشات</h2>
+            <div class="summary-cards">
+                <div class="card">
+                    <span class="card-label">تعداد سفارشات</span>
+                    <span class="card-value" id="totalOrders">0</span>
+                </div>
+                <div class="card">
+                    <span class="card-label">جمع مبلغ</span>
+                    <span class="card-value" id="totalAmount">0</span>
+                    <span class="card-unit">تومان</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
